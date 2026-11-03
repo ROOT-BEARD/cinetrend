@@ -10,7 +10,7 @@ export interface Movie {
     rating?:string;
     duration:string;
     listed_in?:string;
-    description?:string;
+    description:string;
 }
  
 export type NewMovie = Omit<Movie, "show_id">;

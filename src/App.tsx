@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import './App.css'
 import MovieCard from './MovieCard'
 import type { NewMovie } from './types/database';

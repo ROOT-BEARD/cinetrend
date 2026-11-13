@@ -1,14 +1,32 @@
 import { Card, Typography } from "@heroui/react";
 
-export default function MovieCard({title, description}:{title:string, description:string}){
+export default function MovieCard({title,description,releaseYear,director,cast}:
+    {title:string, description:string, releaseYear:string, director:string, cast:string}){
     return(
-        <Card className='min-w-100 h-125 m-20 p-5' variant='tertiary'>
-            <Typography type='h2'>
-                {title}
-            </Typography>
-            <Typography type='body'>
-                {description}
-            </Typography>
+        <Card className='self-center w-sm h-125 gap-6 p-10' variant='tertiary'>
+            <div className="w-full h-full flex flex-col items-between">
+                <div className="w-full h-full flex flex-col">
+                    <Typography type='h1' className="pb-10">
+                        {title}
+                    </Typography>
+                    <div className="w-full flex flex-row justify-between">
+                        <Typography type='h5'>
+                            {director}
+                        </Typography>
+                        <Typography type='h6'>
+                            {releaseYear}
+                        </Typography>
+                    </div>
+                    <Typography type='body'>
+                        {description}
+                    </Typography>
+                </div>
+                <div>
+                    <Typography>
+                        {cast}
+                    </Typography>
+                </div>
+            </div>
         </Card>
     );
 }

@@ -12,7 +12,7 @@ export const movieService = {
 
         return data ?? [];
     },
-        async getMoviesByString(input:string, type:string): Promise<NewMovie[]>{
+        async getMoviesByString(input:string, type:string, director:string): Promise<NewMovie[]>{
         let query = supabase
         .from("media_catalog")
         .select("*")
@@ -22,9 +22,11 @@ export const movieService = {
         if(type != '*'){
             query = query.eq('type', type);
         }
+        if(director != ''){
+            query = query.ilike('director', `director.ilike.${director.trim()},director.ilike.${clean}, %,director.ilike.%, ${clean},director.ilike.%, ${clean}, %`);
+        }
 
         const {data, error} = await query;
-
         if(error) console.error("error getting movies " + error.message);
 
         return data ?? [];

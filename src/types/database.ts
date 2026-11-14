@@ -12,5 +12,20 @@ export interface Movie {
     listed_in?:string;
     description:string;
 }
+
+export interface SearchRecord {
+  search_id: number;
+  uid: string | null;
+  created_at: string;
+  search_query?: string | null;
+  director?: string | null;
+  cast_query?: string | null;
+  genre?: string | null;
+  type?: string | null;
+  rating?: string | null;
+  country?: string | null;
+  release_year?: number | null;
+}
  
+export type NewSearch = Omit<SearchRecord, 'search_id' | 'created_at'>
 export type NewMovie = Omit<Movie, "show_id">;

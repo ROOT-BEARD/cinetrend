@@ -3,7 +3,7 @@ import { Card, Typography } from "@heroui/react";
 export default function MovieCard({title,description,releaseYear,director,cast}:
     {title:string, description:string, releaseYear:string, director:string, cast:string}){
     return(
-        <Card className='self-center w-md h-125 gap-6 p-10 hover:scale-[1.01]' variant='tertiary'>
+        <Card className='self-center w-sm h-125 gap-6 p-10 hover:scale-[1.01]' variant='tertiary'>
             <div className="w-full h-full flex flex-col items-between">
                 <div className="w-full h-full flex flex-col">
                     <Typography type='h1' className="pb-10">

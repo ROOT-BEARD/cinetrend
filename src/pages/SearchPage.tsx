@@ -19,12 +19,12 @@ export default function SearchPage() {
   const [genre, setGenre] = useState<string>('All');
   const [country, setCountry] = useState<string>('All');
   const [advancedSearch, setAdvancedSearch] = useState<boolean>(false);
-
-  let page:number = 1;
-  let amount:number = 10;
+  const [page, setPage] = useState<number>(1);
+  const amount:number = 10;
   
   const handleSearch = async () => {
-    const data = await movieService.getMoviesByString(title, type, director, rating, genre, country, realeaseYear, page++, amount);
+    const data = await movieService.getMoviesByString(title, type, director, rating, genre, country, realeaseYear, page, amount);
+    setPage(page + 1);
     setMovies(data);
     if(user?.id == null) return;
     const search: NewSearch = {
@@ -42,7 +42,8 @@ export default function SearchPage() {
   }
 
   const loadMore = async () => {
-    const data = await movieService.getMoviesByString(title, type, director, rating, genre, country, realeaseYear, page++, amount);
+    const data = await movieService.getMoviesByString(title, type, director, rating, genre, country, realeaseYear, page, amount);
+    setPage(page + 1);
     setMovies((movies) => [...movies, ...data]);
   }
 
@@ -176,7 +177,6 @@ export default function SearchPage() {
     "Vietnam",
   ];
 
-
   return (
     <div className='flex md:flex-row flex-col w-screen h-screen'>
       <Card variant='tertiary' className='md:w-sm w-full pt-10 flex items-center'>
@@ -245,7 +245,7 @@ export default function SearchPage() {
             ))}
           </div>
           <div className='pt-5 pb-5 w-full flex justify-center'>
-            {movies.length > 0 ? <Button onClick={loadMore}>LOAD MORE</Button> : <></>}
+            {movies.length > 0 && movies.length % amount == 0 ? <Button onClick={loadMore}>LOAD MORE</Button> : <></>}
           </div>
         </div>
       </div>

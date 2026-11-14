@@ -20,8 +20,7 @@ export const movieService = {
 
         let query = supabase
         .from("media_catalog")
-        .select("*")
-        .limit(20);
+        .select("*");
 
         if(title.length > 0){
             query = query.ilike('title', `%${title}%`)
@@ -45,7 +44,9 @@ export const movieService = {
             query = query.eq('release_year', releaseYear);
         }
 
-        query = query.range(startOffset, endOffset);
+        query = query
+        .order('show_id', { ascending: true })
+        .range(startOffset, endOffset);
 
         const {data, error} = await query;
         if(error) console.error("error getting movies " + error.message);

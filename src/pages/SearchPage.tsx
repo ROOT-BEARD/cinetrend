@@ -20,8 +20,11 @@ export default function SearchPage() {
   const [country, setCountry] = useState<string>('All');
   const [advancedSearch, setAdvancedSearch] = useState<boolean>(false);
 
+  let page:number = 1;
+  let amount:number = 10;
+  
   const handleSearch = async () => {
-    const data = await movieService.getMoviesByString(title, type, director, rating, genre, country, realeaseYear);
+    const data = await movieService.getMoviesByString(title, type, director, rating, genre, country, realeaseYear, page++, amount);
     setMovies(data);
     if(user?.id == null) return;
     const search: NewSearch = {
@@ -36,6 +39,11 @@ export default function SearchPage() {
         release_year: realeaseYear.trim() ? Number(realeaseYear.trim()) : null
     }
     searchSerive.addSearch(search)
+  }
+
+  const loadMore = async () => {
+    const data = await movieService.getMoviesByString(title, type, director, rating, genre, country, realeaseYear, page++, amount);
+    setMovies((movies) => [...movies, ...data]);
   }
 
   const typeOptions = [
@@ -224,16 +232,21 @@ export default function SearchPage() {
         </TextArea> :<></>}
         <Button onClick={() => handleSearch()}>SEARCH<SearchField.SearchIcon /></Button>
       </Card>
-      <div className='w-full'>
-        <div className='w-full h-full flex justify-center flex-wrap overflow-y-auto
-        overflow-x-hidden pl-5 pr-5 pt-5 gap-5'>
-          {movies.map((v) => (
-            <MovieCard title={v.title}
-              description={v.description}
-              releaseYear={v.release_year}
-              director={v.director ? v.director : ""}
-              cast={v.cast ? v.cast : ""} />
-          ))}
+      <div className='w-full overflow-y-auto
+        overflow-x-hidden'>
+        <div>
+          <div className='w-full h-full flex justify-center flex-wrap pl-5 pr-5 pt-5 gap-5'>
+            {movies.map((v) => (
+              <MovieCard title={v.title}
+                description={v.description}
+                releaseYear={v.release_year}
+                director={v.director ? v.director : ""}
+                cast={v.cast ? v.cast : ""} />
+            ))}
+          </div>
+          <div className='pt-5 pb-5 w-full flex justify-center'>
+            {movies.length > 0 ? <Button onClick={loadMore}>LOAD MORE</Button> : <></>}
+          </div>
         </div>
       </div>
     </div>

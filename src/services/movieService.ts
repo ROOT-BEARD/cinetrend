@@ -13,7 +13,11 @@ export const movieService = {
         return data ?? [];
     },
     async getMoviesByString(title:string, type:string, director:string, rating:string,
-            genre:string, country:string, releaseYear:string): Promise<NewMovie[]>{
+            genre:string, country:string, releaseYear:string, page:number, pageSize:number): Promise<NewMovie[]>{
+        
+        const startOffset = (page - 1) * pageSize;
+        const endOffset = page * pageSize - 1;
+
         let query = supabase
         .from("media_catalog")
         .select("*")
@@ -40,6 +44,8 @@ export const movieService = {
         if(releaseYear.length > 0){
             query = query.eq('release_year', releaseYear);
         }
+
+        query = query.range(startOffset, endOffset);
 
         const {data, error} = await query;
         if(error) console.error("error getting movies " + error.message);

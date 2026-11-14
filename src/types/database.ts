@@ -15,7 +15,7 @@ export interface Movie {
 
 export interface SearchRecord {
   search_id: number;
-  uid: string | null;
+  uid: string;
   created_at: string;
   search_query?: string | null;
   director?: string | null;
@@ -26,6 +26,13 @@ export interface SearchRecord {
   country?: string | null;
   release_year?: number | null;
 }
- 
+
+export interface Account {
+    email:string;
+    created_at?: string;
+    password:string;
+}
+
+export type NewAccount = Omit<Account, 'create_at'>
 export type NewSearch = Omit<SearchRecord, 'search_id' | 'created_at'>
 export type NewMovie = Omit<Movie, "show_id">;

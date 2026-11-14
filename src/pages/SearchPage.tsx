@@ -1,13 +1,15 @@
 import { useState } from 'react'
-import MovieCard from '../MovieCard';
+import MovieCard from '../componets/MovieCard';
 import type { NewMovie, NewSearch } from '../types/database';
 import { movieService } from '../services/movieService';
 import { Button, Card, SearchField, TextArea } from '@heroui/react';
 import SelecetionBox from '../componets/SelectionBox';
 import { searchSerive } from '../services/searchService';
+import { useUser } from '../contexts/UserContext';
 
 
 export default function SearchPage() {
+  const {user} = useUser();
   const [movies, setMovies] = useState<NewMovie[]>([]);
   const [title, setTitle] = useState<string>('');
   const [director, setDirector] = useState<string>('');
@@ -21,8 +23,9 @@ export default function SearchPage() {
   const handleSearch = async () => {
     const data = await movieService.getMoviesByString(title, type, director, rating, genre, country, realeaseYear);
     setMovies(data);
+    if(user?.id == null) return;
     const search: NewSearch = {
-        uid: null,
+        uid: user.id,
         search_query: title.trim(),
         director: director.trim(),
         cast_query: null,

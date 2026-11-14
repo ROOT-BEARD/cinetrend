@@ -13,12 +13,12 @@ export const searchSerive = {
 
         return data;
     },
-    async getRecentSearches(count:number):Promise<SearchRecord[]>{
+    async getRecentSearches(count:number, uid:string):Promise<SearchRecord[]>{
         const {data, error} = await supabase
         .from("searches")
         .select("*")
+        .eq("uid", uid)
         .limit(count);
-        //add a user id eq to check for only a certain users searches
 
         if(error) console.error("Error getting searches ", error.message);
 

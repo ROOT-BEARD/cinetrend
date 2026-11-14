@@ -6,10 +6,10 @@ export default function MovieCard({title,description,releaseYear,director,cast}:
         <Card className='self-center w-sm h-125 gap-6 p-10 hover:scale-[1.01]' variant='tertiary'>
             <div className="w-full h-full flex flex-col items-between">
                 <div className="w-full h-full flex flex-col">
-                    <Typography type='h1' className="pb-10">
+                    <Typography type='h1'>
                         {title}
                     </Typography>
-                    <div className="w-full flex flex-row justify-between">
+                    <div className="pb-5 w-full flex flex-row justify-between">
                         <Typography type='h5'>
                             {director}
                         </Typography>

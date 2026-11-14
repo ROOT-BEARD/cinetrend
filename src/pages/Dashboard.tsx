@@ -1,16 +1,30 @@
 import { Button, Card, Typography } from "@heroui/react";
-import MovieCard from "../MovieCard";
+import MovieCard from "../componets/MovieCard";
 import { useState } from "react";
-import type { NewSearch, SearchRecord } from "../types/database";
+import type { Movie, NewMovie, SearchRecord } from "../types/database";
 import { searchSerive } from "../services/searchService";
+import { useUser } from "../contexts/UserContext";
+import { movieService } from "../services/movieService";
 
 export default function Dashboard(){
+    const {user} = useUser();
     const [searches, setSearches] = useState<SearchRecord[]>([]);
+    const [recommendations, setRecommendations] = useState<NewMovie[]>([]);
+
 
     const getSearches = async() => {
-        const data = await searchSerive.getRecentSearches(2);
+        if(user?.id == null) return;
+        const data = await searchSerive.getRecentSearches(5, user.id);
         setSearches(data);
+        getRecommendations();
     }
+
+    const getRecommendations = async() => {
+        if(user?.id == null || searches.length <= 0) return;
+        const data = await movieService.getRecommendations(searches);
+        setRecommendations(data);
+    }
+
 
     return(
         <div className="w-full h-full flex flex-col overflow-hidden">
@@ -26,30 +40,15 @@ export default function Dashboard(){
             <div className="h-full w-full
                     flex flex-wrap pb-8
                     gap-8 justify-center">
-                <MovieCard
-                title={"Name"}
-                description={"in this movie this is what happens n such"}
-                releaseYear={"2006"}
-                director={"Alden Wyatt"}
-                cast={"bob jack"}/>
-                <MovieCard
-                title={"Name"}
-                description={"in this movie this is what happens n such"}
-                releaseYear={"2006"}
-                director={"Alden Wyatt"}
-                cast={"bob jack"}/>
-                <MovieCard
-                title={"Name"}
-                description={"in this movie this is what happens n such"}
-                releaseYear={"2006"}
-                director={"Alden Wyatt"}
-                cast={"bob jack"}/>
-                <MovieCard
-                title={"Name"}
-                description={"in this movie this is what happens n such"}
-                releaseYear={"2006"}
-                director={"Alden Wyatt"}
-                cast={"bob jack"}/>
+                {recommendations.map((m)=>(
+                    <MovieCard
+                        title={m.title}
+                        description={m.description}
+                        releaseYear={m.release_year}
+                        director={m.director?m.director:""}
+                        cast={m.cast?m.cast:""}
+                    />
+                ))}
             </div>
         </div>
     );

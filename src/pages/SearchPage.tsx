@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import MovieCard from '../componets/MovieCard';
 import type { NewMovie, NewSearch } from '../types/database';
 import { movieService } from '../services/movieService';
@@ -6,11 +6,13 @@ import { Button, Card, SearchField, TextArea } from '@heroui/react';
 import SelecetionBox from '../componets/SelectionBox';
 import { searchSerive } from '../services/searchService';
 import { useUser } from '../contexts/UserContext';
-
+import MovieDrawer from '../componets/MovieDrawer';
 
 export default function SearchPage() {
   const {user} = useUser();
-  const [movies, setMovies] = useState<NewMovie[]>([]);
+  const [movies, setMovies] = useState<NewMovie[]>([]);  
+  const [selectedMovie, setSelectedMovie] = useState<NewMovie|null>(null);  
+  const [overviewOpen, setOverviewOpen] = useState<boolean>(false);
   const [title, setTitle] = useState<string>('');
   const [director, setDirector] = useState<string>('');
   const [realeaseYear, setRealeaseYear] = useState<string>('');
@@ -23,8 +25,8 @@ export default function SearchPage() {
   const amount:number = 10;
   
   const handleSearch = async () => {
-    const data = await movieService.getMoviesByString(title, type, director, rating, genre, country, realeaseYear, page, amount);
-    setPage(page + 1);
+    setPage(1);
+    const data = await movieService.getMoviesByString(title, type, director, rating, genre, country, realeaseYear, 1, amount);
     setMovies(data);
     if(user?.id == null) return;
     const search: NewSearch = {
@@ -42,7 +44,7 @@ export default function SearchPage() {
   }
 
   const loadMore = async () => {
-    const data = await movieService.getMoviesByString(title, type, director, rating, genre, country, realeaseYear, page, amount);
+    const data = await movieService.getMoviesByString(title, type, director, rating, genre, country, realeaseYear, page + 1, amount);
     setPage(page + 1);
     setMovies((movies) => [...movies, ...data]);
   }
@@ -179,6 +181,12 @@ export default function SearchPage() {
 
   return (
     <div className='flex md:flex-row flex-col w-screen h-screen'>
+      <MovieDrawer
+        movie={selectedMovie}
+        opened={selectedMovie !== null}
+        handleClose={(isOpen) => {
+            if(!isOpen) setSelectedMovie(null);
+        }}/>
       <Card variant='tertiary' className='md:w-sm w-full pt-10 flex items-center'>
         <SearchField className='w-[20rem]' name='search'>
           <SearchField.Group>
@@ -237,7 +245,9 @@ export default function SearchPage() {
         <div>
           <div className='w-full h-full flex justify-center flex-wrap pl-5 pr-5 pt-5 gap-5'>
             {movies.map((v) => (
-              <MovieCard title={v.title}
+              <MovieCard
+                handleClick={()=>setSelectedMovie(v)}
+                title={v.title}
                 description={v.description}
                 releaseYear={v.release_year}
                 director={v.director ? v.director : ""}

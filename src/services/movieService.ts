@@ -53,10 +53,12 @@ export const movieService = {
 
         return data ?? [];
     },
-    async getRecommendations(searches:SearchRecord[]): Promise<NewMovie[]>{
+    async getRecommendations(searches:SearchRecord[], count:number): Promise<NewMovie[]>{
         const titles = [...new Set(searches.map((s)=>s.search_query).filter(Boolean))];
+        const genres = [...new Set(searches.map((s)=>s.genre).filter(Boolean))];
         const orFilters = [
-            ...titles.map((t)=> `title.ilike.%${t}%`),
+            ...titles.map((t)=> `title.imatch.\\y${t}\\y`),
+            ...genres.map((t)=> 'genre.imatch.\\y${t}\\y'),
         ];
 
         if(orFilters.length === 0) return [];
@@ -65,7 +67,7 @@ export const movieService = {
         .from("media_catalog")
         .select("*")
         .or(orFilters.join(','))
-        .limit(10);
+        .limit(count);
 
         const {data, error} = await query;
         if(error) console.error("error getting recommendations: ", error.message);

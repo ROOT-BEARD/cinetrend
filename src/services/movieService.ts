@@ -23,7 +23,7 @@ export const movieService = {
         .select("*");
 
         if(title.length > 0){
-            query = query.ilike('title', `%${title}%`)
+            query = query.filter('title', 'imatch',`\\y${title}\\y`)
         }
         if(type != 'All'){
             query = query.eq('type', type);
@@ -38,7 +38,7 @@ export const movieService = {
             query = query.ilike('listed_in', `%${genre}%`);
         }
         if(country != 'All'){
-            query = query.eq    ('country', country);
+            query = query.eq('country', country);
         }
         if(releaseYear.length > 0){
             query = query.eq('release_year', releaseYear);
@@ -55,23 +55,43 @@ export const movieService = {
     },
     async getRecommendations(searches:SearchRecord[], count:number): Promise<NewMovie[]>{
         const titles = [...new Set(searches.map((s)=>s.search_query).filter(Boolean))];
+        const cast = [...new Set(searches.map((c)=>c.cast_query).filter(Boolean))];
+        const directors = [...new Set(searches.map((c)=>c.director).filter(Boolean))];
+        const release_year = [...new Set(searches.map((r)=>r.release_year).filter(Boolean))];
         const genres = [...new Set(searches.map((s)=>s.genre).filter(Boolean))];
-        const orFilters = [
+
+        const orFiltersGroup1 = [
             ...titles.map((t)=> `title.imatch.\\y${t}\\y`),
-            ...genres.map((t)=> 'genre.imatch.\\y${t}\\y'),
+            ...directors.map((d)=> `director.ilike.%${d}%`),
+            ...cast.map((c) => `cast.imatch.\\y${c}\\y`),  
         ];
 
-        if(orFilters.length === 0) return [];
+        const orFiltersGroup2 = [
+            ...genres.map((g)=> `listed_in.ilike.%${g}%`),
+            ...release_year.map((r)=> `release_year.ilike.%${r}%`),
 
-        let query = supabase
+        ]
+
+        if(orFiltersGroup1.length === 0) return [];
+
+        const {data: data1, error: error1} = await supabase
         .from("media_catalog")
         .select("*")
-        .or(orFilters.join(','))
-        .limit(count);
+        .or(orFiltersGroup1.join(','))
+        .limit(count/2);
 
-        const {data, error} = await query;
-        if(error) console.error("error getting recommendations: ", error.message);
+        if(error1) console.error("error getting recommendations: ", error1.message);
+
+        const {data: data2, error: error2} = await supabase
+        .from("media_catalog")
+        .select("*")
+        .or(orFiltersGroup2.join(','))
+        .limit(count/2);
+
+        if(error2) console.error("error getting recommendations: ", error2.message);
         
-        return data??[];
+        const data = [...(data1 ?? []), ...(data2 ?? [])];
+
+        return data ?? [];
     }
 };

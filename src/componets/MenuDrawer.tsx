@@ -5,7 +5,7 @@ export default function MenuDrawer(){
     return(
         <Drawer>
             <Button variant="primary" size="lg" className='fixed bottom-4 right-4 z-10'>HOME</Button>
-            <Drawer.Backdrop>
+            <Drawer.Backdrop className="data-[state=closed]:pointer-events-none">
                 <Drawer.Content placement="bottom">
                     <Drawer.Dialog>
                         <Drawer.CloseTrigger />

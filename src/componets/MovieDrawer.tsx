@@ -3,13 +3,15 @@ import type { NewMovie } from "../types/database";
 
 export default function MovieDrawer({opened, handleClose, movie}:{opened:boolean, handleClose:(isOpen:boolean)=>void, movie:NewMovie|null}){
     
+    if (!opened || !movie) return null; 
+
     const genreList = () => {
         if(!movie?.listed_in) return;
         const tokens:string[] = movie?.listed_in?.split(',');
         if(tokens == null) return;
         return(
             tokens.map((genre)=>(
-                <Card variant="secondary"> 
+                <Card key={genre} variant="secondary"> 
                     {genre}
                 </Card>
             ))
@@ -21,9 +23,9 @@ export default function MovieDrawer({opened, handleClose, movie}:{opened:boolean
         const tokens:string[] = movie?.cast?.split(',');
         if(tokens == null) return;
         return(
-            tokens.map((genre)=>(
-                <Card variant="secondary"> 
-                    {genre}
+            tokens.map((cast)=>(
+                <Card key={cast} variant="secondary"> 
+                    {cast}
                 </Card>
             ))
         );
@@ -35,8 +37,8 @@ export default function MovieDrawer({opened, handleClose, movie}:{opened:boolean
                 <Drawer.Content placement="bottom">
                     <Drawer.Dialog>
                         <Drawer.CloseTrigger/>
-                        <Drawer.Body className="m-0 md:m-10 h-screen w-full justify-center flex flex-row overflow-y-auto md:overflow-y-hidden">
-                            <div className="h-screen w-full">
+                        <Drawer.Body className="m-0 md:m-2 pl-10 h-screen w-full justify-center flex flex-row">
+                            <div className="h-full w-full overflow-y-auto">
                             <Typography className="pb-3" type="h1">{movie?.title}</Typography>
                             <div className="pb-3 w-full flex flex-wrap gap-x-3 gap-y-2">
                                 <Typography type="code">

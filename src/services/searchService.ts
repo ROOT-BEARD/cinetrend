@@ -18,7 +18,8 @@ export const searchSerive = {
         .from("searches")
         .select("*")
         .eq("uid", uid)
-        .limit(count);
+        .limit(count)
+        .order('created_at', {ascending:false});
 
         if(error) console.error("Error getting searches ", error.message);
 

@@ -23,12 +23,12 @@ export default function Dashboard(){
 
     const getRecommendations = async() => {
         if(user?.id == null || searches.length <= 0) return;
-        const data = await movieService.getRecommendations(searches, 5);
+        const data = await movieService.getRecommendations(searches, 18);
         setRecommendations(data);
     }
 
     useEffect(()=>{
-        if(searches.length <= 0) getSearches();
+        if(searches.length <= 0) getSearches()
         else getRecommendations();
     },[user?.id, searches]);
 

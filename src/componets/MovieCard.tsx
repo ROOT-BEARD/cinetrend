@@ -3,7 +3,10 @@ import { Card, Typography } from "@heroui/react";
 export default function MovieCard({title,description,releaseYear,director,cast,handleClick}:
     {title:string, description:string, releaseYear:string, director:string, cast:string,handleClick:()=>void|null}){
     return(
-        <Card onClick={handleClick ?? undefined} className='self-center w-sm h-125 gap-6 p-10 hover:scale-[1.01]' variant='tertiary'>
+        <Card
+        onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.01)")}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1.00)")}
+        onClick={handleClick ?? undefined} className='self-center w-sm h-125 gap-6 p-10' variant='tertiary'>
             <div className="w-full h-full flex flex-col items-between">
                 <div className="w-full h-full flex flex-col">
                     <Typography type='h1'>

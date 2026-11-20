@@ -1,0 +1,14 @@
+import { Switch, Label } from "@heroui/react";
+
+export default function AndSwitch({andSearch, setAndSearch}:{andSearch:boolean, setAndSearch:(value:boolean)=>void}){
+    return(
+        <Switch isSelected={andSearch} onChange={setAndSearch}>
+            <Switch.Content>
+                <Label>{andSearch?"AND":"OR"}</Label>
+            <Switch.Control>
+                <Switch.Thumb />
+            </Switch.Control>
+            </Switch.Content>
+        </Switch>
+    );
+}

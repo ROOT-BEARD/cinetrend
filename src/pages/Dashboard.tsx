@@ -12,7 +12,6 @@ export default function Dashboard(){
     const [searches, setSearches] = useState<SearchRecord[]>([]);
     const [recommendations, setRecommendations] = useState<NewMovie[]>([]);
     const [selectedMovie, setSelectedMovie] = useState<NewMovie|null>(null);  
-    const [overviewOpen, setOverviewOpen] = useState<boolean>(false);
 
     const getSearches = async() => {
         if(user?.id == null) return;
@@ -41,12 +40,8 @@ export default function Dashboard(){
                     if(!isOpen) setSelectedMovie(null);
                 }}
             />
-            <Card className="h-100 w-full">
-                {searches.map((search) =>(
-                <Card key={search.created_at}>
-                    {search.search_query}
-                </Card>
-                ))}
+            <Card className="h-100 w-full flex justify-center items-center">
+                <Typography className="text-accent" type="h1">WELCOME TO CINETREND</Typography>
             </Card>
             <Typography type="h3" className="p-5">RECOMMENDATIONS</Typography>
             <div className="h-full w-full
@@ -55,11 +50,7 @@ export default function Dashboard(){
                 {recommendations.map((m)=>(
                     <MovieCard
                         handleClick={()=>setSelectedMovie(m)}
-                        title={m.title}
-                        description={m.description}
-                        releaseYear={m.release_year}
-                        director={m.director?m.director:""}
-                        cast={m.cast?m.cast:""}
+                        movie={m}
                     />
                 ))}
             </div>

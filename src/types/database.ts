@@ -16,7 +16,7 @@ export interface Movie {
 export interface SearchRecord {
   search_id: number | null;
   uid: string | null;
-  created_at: string;
+  created_at: string | null;
   search_query?: string | null;
   director?: string | null;
   cast_query?: string | null;

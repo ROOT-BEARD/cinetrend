@@ -1,55 +1,74 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import MovieCard from '../componets/MovieCard';
 import type { NewMovie, NewSearch } from '../types/database';
 import { movieService } from '../services/movieService';
-import { Button, Card, SearchField, TextArea } from '@heroui/react';
+import { Button, Card, SearchField } from '@heroui/react';
 import SelecetionBox from '../componets/SelectionBox';
 import { searchSerive } from '../services/searchService';
 import { useUser } from '../contexts/UserContext';
 import MovieDrawer from '../componets/MovieDrawer';
+import SearchInputAC from '../componets/SearchInputAC';
+import AndSwitch from '../componets/AndSwitch';
 
 export default function SearchPage() {
   const {user} = useUser();
   const [movies, setMovies] = useState<NewMovie[]>([]);  
   const [selectedMovie, setSelectedMovie] = useState<NewMovie|null>(null);  
-  const [overviewOpen, setOverviewOpen] = useState<boolean>(false);
   const [title, setTitle] = useState<string>('');
-  const [director, setDirector] = useState<string>('');
   const [realeaseYear, setRealeaseYear] = useState<string>('');
   const [type, setType] = useState<string | null>(null);
-  const [rating, setRating] = useState<string | null>(null);
-  const [genre, setGenre] = useState<string | null>(null);
-  const [country, setCountry] = useState<string | null>(null);
-  const [advancedSearch, setAdvancedSearch] = useState<boolean>(false);
+
+  //current search
+  const [currentSearch, setCurrentSearch] = useState<NewSearch|null>(null);
+
+  //the page managment variables
   const [page, setPage] = useState<number>(1);
   const amount:number = 10;
+  //country options
+  const [countryAnd, setCountryAnd] = useState<boolean>(true);
+  const [country, setCountry] = useState<string[]>([]);
+  //rating options
+  const [andSearch, SetAndSearch] = useState<boolean>(true);
+  const [rating, setRating] = useState<string[]>([]);
+  //genre options
+  const [genreAnd, SetGenreAnd] = useState<boolean>(true);
+  const [genre, setGenre] = useState<string[]>([]);
+  //director options
+  const [directorAnd, setDirectorAnd] = useState<boolean>(false);
+  const [director, setDirector] = useState<string>('');
+  //cast options
+  const [castAnd, setCastAnd] = useState<boolean>(false);
+  const [cast, setCast] = useState<string>('');
   
   const handleSearch = async () => {
-    setPage(1);
-    const data = await movieService.getMoviesByString(title, type, director, rating, genre, country, realeaseYear, 1, amount);
-    setMovies(data);
-    if(user?.id == null) return;
     const search: NewSearch = {
-        uid: user.id,
+        uid: user?.id ?? null,
         search_query: title.trim(),
         director: director.trim(),
-        cast_query: null,
-        genre: genre,
+        cast_query: cast,
+        genre: genre.join(","),
         type: type,
-        rating: rating,
-        country: country,
+        rating: rating.join(","),
+        country: country.join(","),
         release_year: realeaseYear.trim() ? Number(realeaseYear.trim()) : null
     }
+    setCurrentSearch(search);
+    setPage(1);
+    const data = await movieService.getMoviesByString(search, 1, amount, genreAnd, countryAnd, directorAnd, castAnd);
+    setMovies(data);
+    if(user?.id == null) return;      
     searchSerive.addSearch(search)
   }
 
   const loadMore = async () => {
-    const data = await movieService.getMoviesByString(title, type, director, rating, genre, country, realeaseYear, page + 1, amount);
+    if(currentSearch == null) return;
+    const data = await movieService.getMoviesByString(currentSearch, page + 1, amount, genreAnd, countryAnd, directorAnd, castAnd);
     setPage(page + 1);
     setMovies((movies) => [...movies, ...data]);
   }
 
   const typeOptions = [
+    "All",
     "Movies",
     "TV Shows"
   ];
@@ -112,7 +131,6 @@ export default function SearchPage() {
   ];
 
   const countryOptions = [
-    "All",
     "Algeria",
     "Argentina",
     "Australia",
@@ -192,49 +210,66 @@ export default function SearchPage() {
             <SearchField.ClearButton onClick={e => setTitle('')} />
           </SearchField.Group>
         </SearchField>
-        <div className='flex flex-row gap-2'>
-          <SearchField className='w-[10rem]' name='director'>
+        <div className='flex flex-row w-full items-center gap-3'>
+          <SearchField className='w-full' name='director'>
             <SearchField.Group>
               <SearchField.Input placeholder='Director...' value={director} onChange={(e) => { setDirector(e.target.value) }} />
             </SearchField.Group>
           </SearchField>
-          <SearchField className='w-[10rem]' name='realeaseYear'>
-            <SearchField.Group>
-              <SearchField.Input type='number' placeholder='Release Year...' value={realeaseYear} onChange={(e) => { setRealeaseYear(e.target.value) }} />
-            </SearchField.Group>
-          </SearchField>
-        </div>
-        <div className='flex flex-row gap-2'>
-          <SelecetionBox
-            selectionOptions={typeOptions}
-            value={type}
-            setValue={setType}
-            title='type'
-          />
-          <SelecetionBox
-            selectionOptions={ratingOptions}
-            value={rating}
-            setValue={setRating}
-            title='rating'
-          />
-          <SelecetionBox
-            selectionOptions={countryOptions}
-            value={country}
-            setValue={setCountry}
-            title='country'
+          <AndSwitch
+            andSearch={directorAnd}
+            setAndSearch={setDirectorAnd}
           />
         </div>
+        <SearchField className='w-[10rem]' name='realeaseYear'>
+          <SearchField.Group>
+            <SearchField.Input type='number' placeholder='Release Year...' value={realeaseYear} onChange={(e) => { setRealeaseYear(e.target.value) }} />
+          </SearchField.Group>
+        </SearchField>
+        <SearchInputAC
+          onlyOr={true}
+          setAndSearch={SetAndSearch}
+          andSearch={andSearch}
+          value={rating}
+          setValue={setRating}
+          title='Rating'
+          selectionOptions={ratingOptions}
+        />
         <SelecetionBox
-          selectionOptions={genreOptions}
+          selectionOptions={typeOptions}
+          value={type}
+          setValue={setType}
+          title='type'
+        />
+        <SearchInputAC
+          onlyOr={false}
+          setAndSearch={setCountryAnd}
+          andSearch={countryAnd}
+          value={country}
+          setValue={setCountry}
+          title='Country'
+          selectionOptions={countryOptions}
+        />
+        <SearchInputAC
+          onlyOr={false}
+          setAndSearch={SetGenreAnd}
+          andSearch={genreAnd}
           value={genre}
           setValue={setGenre}
-          title='genre'
+          title='Genre'
+          selectionOptions={genreOptions}
         />
-        <Button variant='ghost' onClick={()=>{setAdvancedSearch(!advancedSearch)}}>ADVANCED SEARCH</Button>
-        {advancedSearch?
-        <TextArea className='w-full'>
-        
-        </TextArea> :<></>}
+        <div className='flex flex-row w-full items-center gap-3'>
+          <SearchField className='w-full' name='director'>
+            <SearchField.Group>
+              <SearchField.Input placeholder='Cast...' value={cast} onChange={(e) => { setCast(e.target.value) }} />
+            </SearchField.Group>
+          </SearchField>
+          <AndSwitch
+            andSearch={castAnd}
+            setAndSearch={setCastAnd}
+          />
+        </div>
         <Button onClick={() => handleSearch()}>SEARCH<SearchField.SearchIcon /></Button>
       </Card>
       <div className='w-full overflow-y-auto
@@ -244,11 +279,7 @@ export default function SearchPage() {
             {movies.map((v) => (
               <MovieCard
                 handleClick={()=>setSelectedMovie(v)}
-                title={v.title}
-                description={v.description}
-                releaseYear={v.release_year}
-                director={v.director ? v.director : ""}
-                cast={v.cast ? v.cast : ""} />
+                movie={v} />
             ))}
           </div>
           <div className='pt-5 pb-5 w-full flex justify-center'>

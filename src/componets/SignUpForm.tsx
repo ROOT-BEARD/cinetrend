@@ -15,7 +15,7 @@ export default function SignUpForm({setEmail, setPassword, email, password,
             <Input placeholder="Email..." className='w-1/2 mb-5'
                 onChange={(e)=>setEmail(e.target.value)} value={email as string}
             />
-            <Input placeholder="Password..." className='w-1/2 mb-5 '
+            <Input type="password" placeholder="Password..." className='w-1/2 mb-5 '
                 onChange={(e)=>setPassword(e.target.value)} value={password as string}
             />
             <Button

@@ -1,4 +1,4 @@
-import type { NewMovie, SearchRecord } from "../types/database";
+import type { NewMovie, NewSearch, SearchRecord } from "../types/database";
 import { supabase } from "../supabase-client";
 
 export const movieService = {
@@ -12,41 +12,75 @@ export const movieService = {
 
         return data ?? [];
     },
-    async getMoviesByString(title:string, type:string, director:string, rating:string,
-            genre:string, country:string, releaseYear:string, page:number, pageSize:number): Promise<NewMovie[]>{
-        
+    async getMoviesByString(search:NewSearch, page:number, pageSize:number,
+        genreAnd:boolean, countryAnd:boolean, directorAnd:boolean, castAnd:boolean): Promise<NewMovie[]>{
         const startOffset = (page - 1) * pageSize;
-        const endOffset = page * pageSize - 1;
+        const endOffset = page * pageSize - 1;        
+        const directorList:string[] = search.director?.split(",").map((d)=>d.trim()).filter(Boolean) ?? [];
+        const castList:string[] = search.cast_query?.split(",").map((d)=>d.trim()).filter(Boolean) ?? [];
+        const genreList:string[] = search.genre?.split(",").map((d)=>d.trim()).filter(Boolean) ?? [];
+        const countryList:string[] = search.country?.split(",").map((d)=>d.trim()).filter(Boolean) ?? [];
+        const ratingList:string[] = search.rating?.split(",").map((d)=>d.trim()).filter(Boolean) ?? [];
+        
+        const andGroups: string[] = [];
 
         let query = supabase
         .from("media_catalog")
         .select("*");
 
-        if(title.length > 0){
-            query = query.filter('title', 'imatch',`\\y${title}\\y`)
+        if(search.search_query && search.search_query?.length > 0){
+            query = query.filter('title', 'imatch',`\\y${search.search_query}\\y`)
         }
-        if(type != null){
-            query = query.eq('type', type);
+        if(search.type != null){
+            query = query.eq('type', search.type);
         }
-        if(director.length > 0){
-            query = query.ilike('director', `%${director.trim()}%`);
+        if(search.release_year){
+            query = query.eq('release_year', search.release_year);
         }
-        if(rating != null){
-            query = query.eq('rating', rating);
+
+        if(genreList.length > 0){
+            if(genreAnd){
+                genreList.forEach((g) => (query = query.ilike('listed_in', `%${g}%`)));
+            } else {
+                const filters = [...new Set(genreList.filter(Boolean))].map((g)=>`listed_in.ilike.%${g}%`);
+                andGroups.push(`or(${filters.join(",")})`);
+            }
         }
-        if(genre != null){
-            query = query.ilike('listed_in', `%${genre}%`);
+        if(countryList.length > 0){
+            if(countryAnd){
+                countryList.forEach((c) => (query = query.ilike('country', `%${c}%`)));
+            } else {
+                const filters = [...new Set(countryList.filter(Boolean))].map((c)=>`country.ilike.%${c}%`);
+                andGroups.push(`or(${filters.join(",")})`);
+            }
         }
-        if(country != null){
-            query = query.eq('country', country);
+        if(directorList.length > 0){
+            if(directorAnd){
+                directorList.forEach((d) => (query = query.ilike('director', `%${d}%`)));
+            } else {
+                const filters = [...new Set(directorList.filter(Boolean))].map((d)=>`director.ilike.%${d}%`);
+                andGroups.push(`or(${filters.join(",")})`);
+            }
         }
-        if(releaseYear.length > 0){
-            query = query.eq('release_year', releaseYear);
+        if(castList.length > 0){
+            if(castAnd){
+                castList.forEach((c) => (query = query.ilike('cast', `%${c}%`)));
+            } else {
+                const filters = [...new Set(castList.filter(Boolean))].map((c)=>`cast.ilike.%${c}%`);
+                andGroups.push(`or(${filters.join(",")})`);
+            }
+        }
+        if(ratingList.length > 0){
+            query = query.in("rating", ratingList);
         }
 
         query = query
         .order('show_id', { ascending: true })
         .range(startOffset, endOffset);
+        
+        if(andGroups.length > 0){
+            query = query.or(`and(${andGroups.join(',')})`);
+        }
 
         const {data, error} = await query;
         if(error) console.error("error getting movies " + error.message);
@@ -70,8 +104,6 @@ export const movieService = {
             ...genres.map((g)=> `listed_in.ilike.%${g}%`),
             ...release_year.map((r)=> `release_year.eq.${r}`),
         ];
-
-        //if(orFiltersGroup1.length === 0) return [];
 
         const {data: data1, error: error1} = await supabase
         .from("media_catalog")

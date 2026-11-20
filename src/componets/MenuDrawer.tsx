@@ -16,6 +16,7 @@ export default function MenuDrawer(){
                             <Link to={'/'}><Button variant="ghost">HOME</Button></Link>
                             <Link to={'/search_page'}><Button variant="ghost">SEARCH</Button></Link>
                             <Link to={'/authentication_page'}><Button variant="ghost">ACCOUNT</Button></Link>
+                            <Link to={'/admin_dashboard'}><Button variant="ghost">ADMIN DASHBOARD</Button></Link>
                         </Drawer.Body>
                     </Drawer.Dialog>
                 </Drawer.Content>

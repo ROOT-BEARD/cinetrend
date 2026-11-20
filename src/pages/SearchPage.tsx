@@ -16,10 +16,10 @@ export default function SearchPage() {
   const [title, setTitle] = useState<string>('');
   const [director, setDirector] = useState<string>('');
   const [realeaseYear, setRealeaseYear] = useState<string>('');
-  const [type, setType] = useState<string>('All');
-  const [rating, setRating] = useState<string>('All');
-  const [genre, setGenre] = useState<string>('All');
-  const [country, setCountry] = useState<string>('All');
+  const [type, setType] = useState<string | null>(null);
+  const [rating, setRating] = useState<string | null>(null);
+  const [genre, setGenre] = useState<string | null>(null);
+  const [country, setCountry] = useState<string | null>(null);
   const [advancedSearch, setAdvancedSearch] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const amount:number = 10;
@@ -34,10 +34,10 @@ export default function SearchPage() {
         search_query: title.trim(),
         director: director.trim(),
         cast_query: null,
-        genre: genre !== 'All' ? genre : null,
-        type: type !== 'All' ? type : null,
-        rating: rating !== 'All' ? rating : null,
-        country: country !== 'All' ? country : null,
+        genre: genre,
+        type: type,
+        rating: rating,
+        country: country,
         release_year: realeaseYear.trim() ? Number(realeaseYear.trim()) : null
     }
     searchSerive.addSearch(search)
@@ -50,13 +50,11 @@ export default function SearchPage() {
   }
 
   const typeOptions = [
-    "All",
     "Movies",
     "TV Shows"
   ];
 
   const ratingOptions = [
-    "All",
     "G",
     "PG",
     "PG-13",
@@ -69,7 +67,6 @@ export default function SearchPage() {
   ];
 
   const genreOptions = [
-    "All",
     "Action & Adventure",
     "Anime Features",
     "Anime Series",

@@ -25,19 +25,19 @@ export const movieService = {
         if(title.length > 0){
             query = query.filter('title', 'imatch',`\\y${title}\\y`)
         }
-        if(type != 'All'){
+        if(type != null){
             query = query.eq('type', type);
         }
         if(director.length > 0){
             query = query.ilike('director', `%${director.trim()}%`);
         }
-        if(rating != 'All'){
+        if(rating != null){
             query = query.eq('rating', rating);
         }
-        if(genre != 'All'){
+        if(genre != null){
             query = query.ilike('listed_in', `%${genre}%`);
         }
-        if(country != 'All'){
+        if(country != null){
             query = query.eq('country', country);
         }
         if(releaseYear.length > 0){
@@ -68,11 +68,10 @@ export const movieService = {
 
         const orFiltersGroup2 = [
             ...genres.map((g)=> `listed_in.ilike.%${g}%`),
-            ...release_year.map((r)=> `release_year.ilike.%${r}%`),
+            ...release_year.map((r)=> `release_year.eq.${r}`),
+        ];
 
-        ]
-
-        if(orFiltersGroup1.length === 0) return [];
+        //if(orFiltersGroup1.length === 0) return [];
 
         const {data: data1, error: error1} = await supabase
         .from("media_catalog")

@@ -3,8 +3,8 @@ import { supabase } from "../supabase-client";
 
 export const movieService = {
     //gets the movie based on search, and or booleans, page number, and page size
-    async getMoviesByString(search:NewSearch, page:number, pageSize:number,
-        genreAnd:boolean, countryAnd:boolean, directorAnd:boolean, castAnd:boolean): Promise<NewMovie[]>{
+    async getMoviesByString(search:NewSearch, page:number, pageSize:number, genreAnd:boolean,
+        countryAnd:boolean, directorAnd:boolean, castAnd:boolean, keywords:string): Promise<NewMovie[]>{
         /* gets the start to search at, whcih is the page - 1, to make it 0 indexed, * the page amount
         for example, page 1 with a pagesize of 8, start at 0, and get an end offest of 8, page 2 will have a
         start of 8 and end of 16 */ 
@@ -17,6 +17,7 @@ export const movieService = {
         const genreList:string[] = search.genre?.split(",").map((d)=>d.trim()).filter(Boolean) ?? [];
         const countryList:string[] = search.country?.split(",").map((d)=>d.trim()).filter(Boolean) ?? [];
         const ratingList:string[] = search.rating?.split(",").map((d)=>d.trim()).filter(Boolean) ?? [];
+        const keywordList:string[] = keywords?.split(",").map((k)=>k.trim()).filter(Boolean) ?? [];
         
         //used to store the or reuqirments that will be added to the query
         const orGroups: string[] = [];
@@ -79,6 +80,10 @@ export const movieService = {
                 orGroups.push(`or(${filters.join(",")})`);
             }
         }
+        if(keywordList.length > 0){
+            const filters = [...new Set(keywordList.filter(Boolean))].map((k)=>`description.ilike.%${k}%`);
+            orGroups.push(`or(${filters.join(",")})`);
+        }
         //if the rating is enterd
         if(ratingList.length > 0){
             // then check if the rating is in the query
@@ -128,7 +133,7 @@ export const movieService = {
         ];
         //creates the second group
         const orFiltersGroup2 = [
-            ...directors.map((d)=> `director.ilike.%${d}%`),,
+            ...directors.map((d)=> `director.ilike.%${d}%`),
             ...release_year.map((r)=> `release_year.eq.${r}`),
         ];
 

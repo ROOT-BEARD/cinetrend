@@ -21,7 +21,7 @@ export default function DataBarChart({data}:{data:SearchData[]}){
                 >
                     <CartesianGrid />
                     <XAxis dataKey="name" />
-                    <YAxis width="auto" />
+                    <YAxis width="auto" allowDecimals={false} />
                     <Tooltip
                         contentStyle={{ backgroundColor: '#181b1e' }}
                         cursor={false}

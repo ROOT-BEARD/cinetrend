@@ -22,7 +22,7 @@ export default function SearchPage() {
   //the year of relese
   const [realeaseYear, setRealeaseYear] = useState<string>('');
   // media type (TV Show or Movie)
-  const [type, setType] = useState<string | null>(null);
+  const [type, setType] = useState<string | null>("All");
   //current search
   const [currentSearch, setCurrentSearch] = useState<NewSearch|null>(null);
   //the page managment variables
@@ -43,6 +43,8 @@ export default function SearchPage() {
   //cast options
   const [castAnd, setCastAnd] = useState<boolean>(false);
   const [cast, setCast] = useState<string>('');
+  //description keyword options
+  const [keywords, setKeywords] = useState<string>('');
   
   //Search the database
   const handleSearch = async () => {
@@ -56,25 +58,40 @@ export default function SearchPage() {
         type: type,
         rating: rating.join(","),
         country: country.join(","),
-        release_year: realeaseYear.trim() ? Number(realeaseYear.trim()) : null
+        //if the relase year is an integer is an intenger, and it is between 1900 and 2028, it is valid and add it to the search
+        //otherwise make it null
+        release_year: Number.isInteger(Number(realeaseYear.trim())) && Number(realeaseYear.trim()) >= 1900 && Number(realeaseYear.trim()) <= 2028 ?
+        Number(realeaseYear.trim()) : null
     }
     //set the current search
     setCurrentSearch(search);
     //start page over to 1
     setPage(1);
     // get the movies
-    const data = await movieService.getMoviesByString(search, 1, amount, genreAnd, countryAnd, directorAnd, castAnd);
+    const data = await movieService.getMoviesByString(search, 1, amount, genreAnd, countryAnd, directorAnd, castAnd, keywords);
     setMovies(data);
     // if there is a user save the search
     if(user?.id == null) return;      
     searchSerive.addSearch(search)
   }
 
+  // loads another page
   const loadMore = async () => {
     if(currentSearch == null) return;
-    const data = await movieService.getMoviesByString(currentSearch, page + 1, amount, genreAnd, countryAnd, directorAnd, castAnd);
+    //adds to tge page count
+    const data = await movieService.getMoviesByString(currentSearch, page + 1, amount, genreAnd, countryAnd, directorAnd, castAnd, keywords);
     setPage(page + 1);
+    //appends the new movies to the current movie list
     setMovies((movies) => [...movies, ...data]);
+  }
+
+  // keeps input as a integer
+  const handleSetReleaseYear = (input:string) => {
+    if(!parseInt(input)){
+      setRealeaseYear("");
+    }else{
+      setRealeaseYear(input);
+    }
   }
 
   // options for selection boxes
@@ -224,11 +241,17 @@ export default function SearchPage() {
           value={title}
           setValue={setTitle}
         />
+        <SelecetionBox
+          selectionOptions={typeOptions}
+          value={type}
+          setValue={setType}
+          title='type'
+        />
         <SearchInput
           icon={false}
           title='Release Year'
           value={realeaseYear}
-          setValue={setRealeaseYear}
+          setValue={(e) => handleSetReleaseYear(e)}
         />
         <SearchInputAC
           onlyOr={true}
@@ -238,12 +261,6 @@ export default function SearchPage() {
           setValue={setRating}
           title='Rating'
           selectionOptions={ratingOptions}
-        />
-        <SelecetionBox
-          selectionOptions={typeOptions}
-          value={type}
-          setValue={setType}
-          title='type'
         />
         <SearchInputAC
           onlyOr={false}
@@ -286,7 +303,14 @@ export default function SearchPage() {
             andSearch={directorAnd}
             setAndSearch={setDirectorAnd}
           />
+          
         </div>
+        <SearchInput
+          icon={false}
+          title='Description Keywords'
+          value={keywords}
+          setValue={setKeywords}
+        />
         <Button onClick={() => handleSearch()}>SEARCH<SearchField.SearchIcon /></Button>
       {/* Card to hold the movies/TV shows */}
       </Card>

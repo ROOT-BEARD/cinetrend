@@ -45,7 +45,6 @@ export const searchSerive = {
             console.log("error getting actors:", error.message);
         }
 
-
         //hashmap to count amount of time actors were searched for
         const counts = new Map<string, number>();
 

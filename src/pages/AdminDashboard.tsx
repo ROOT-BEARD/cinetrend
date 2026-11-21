@@ -74,41 +74,43 @@ export default function AdminDashboard(){
 
     return(
         <div className="w-screen md:h-screen h-full flex justify-center items-center">
-            <Card variant="secondary" className="flex items-center md:h-7/8 md:w-3/4 w-full items-center">
-                <div className="flex md:flex-row flex-col w-full gap-6">
-                    {/* used to get the paremeter to search for */}
-                    <SelecetionBox
-                        title="Picked" 
-                        value={picked}
-                        setValue={setPicked}
-                        selectionOptions={options}      
-                    />
-                    {/* used to get the top amout */}
-                    <div className="flex flex-row h-full items-center gap-2">
-                        TOP
+            <Card variant="secondary" className="flex items-center md:h-15/16 md:w-3/4 w-full items-center">
+                <div className="pb-3">
+                    <div className="flex md:flex-row flex-col w-full gap-6">
+                        {/* used to get the paremeter to search for */}
                         <SelecetionBox
-                        title="Top" 
-                        value={topAmount}
-                        setValue={setTopAmount}
-                        selectionOptions={topOptions}      
+                            title="Picked" 
+                            value={picked}
+                            setValue={setPicked}
+                            selectionOptions={options}      
                         />
+                        {/* used to get the top amout */}
+                        <div className="flex flex-row h-full items-center gap-2">
+                            TOP
+                            <SelecetionBox
+                            title="Top" 
+                            value={topAmount}
+                            setValue={setTopAmount}
+                            selectionOptions={topOptions}      
+                            />
+                        </div>
                     </div>
+                        {/* used to the the amount of months to look back at */}
+                        <div className="flex flex-row h-full items-center gap-2">
+                            PAST
+                            <SelecetionBox
+                                title="Time Range" 
+                                value={timeRange}
+                                setValue={setTimeRange}
+                                selectionOptions={timeOptions}      
+                            />
+                            MONTH(S)
+                        </div>
                 </div>
-                    {/* used to the the amount of months to look back at */}
-                    <div className="flex flex-row h-full items-center gap-2">
-                        PAST
-                        <SelecetionBox
-                            title="Time Range" 
-                            value={timeRange}
-                            setValue={setTimeRange}
-                            selectionOptions={timeOptions}      
-                        />
-                        MONTH(S)
-                    </div>
                 {/* Sets data for the barchar to display equal to the current
-                search */}
-                <DataBarChart data={currentSearch}/>
-                <Button onClick={handleSearch}><IconSearch/></Button>
+                search, displays the chart if there is saerch data, otherwise display there is not data found*/}
+                {currentSearch.length > 0 ? <DataBarChart data={currentSearch}/>:<div className="h-full flex justify-center items-center">NO DATA FOUND</div>}
+                <Button className='px-25 py-7' onClick={handleSearch}><IconSearch className="size-8"/></Button>
             </Card>
         </div>
     );

@@ -40,7 +40,10 @@ export default function AuthenticationPage(){
         <div className="w-full h-screen flex justify-center items-center">
             <Card variant="secondary" className=" flex flex-col items-center pt-25 md:w-1/2 md:m-0 m-5 w-full h-2/3">
                 {/* if signed in display sign out button, else, the sign up form */}
-                {signedIn?<Button onClick={handleSignOut}>SIGN OUT</Button>:
+                {signedIn?
+                <div className="h-full w-full flex justify-center items-center pb-25">
+                    <Button onClick={handleSignOut}>SIGN OUT</Button>
+                </div>:
                 //gets the users input
                 <SignUpForm
                     setEmail={setEmail}

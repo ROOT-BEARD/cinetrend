@@ -31,7 +31,7 @@ export const movieService = {
         if(search.search_query && search.search_query?.length > 0){
             query = query.filter('title', 'imatch',`\\y${search.search_query}\\y`)
         }
-        if(search.type != null){
+        if(search.type && search.type != "All"){
             query = query.eq('type', search.type);
         }
         if(search.release_year){
@@ -90,9 +90,9 @@ export const movieService = {
     async getRecommendations(searches:SearchRecord[], count:number): Promise<NewMovie[]>{
         const titles = [...new Set(searches.map((s)=>s.search_query).filter(Boolean))];
         const cast = [...new Set(searches.map((c)=>c.cast_query).filter(Boolean))];
-        const directors = [...new Set(searches.map((c)=>c.director).filter(Boolean))];
+        const directors = [...new Set(searches.flatMap((c)=>c.director?.split(',')).filter(Boolean))];
         const release_year = [...new Set(searches.map((r)=>r.release_year).filter(Boolean))];
-        const genres = [...new Set(searches.map((s)=>s.genre).filter(Boolean))];
+        const genres = [...new Set(searches.flatMap((s)=>s.genre?.split(',')).filter(Boolean))];
 
         const orFiltersGroup1 = [
             ...titles.map((t)=> `title.imatch.\\y${t}\\y`),

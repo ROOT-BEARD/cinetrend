@@ -33,7 +33,7 @@ export default function AuthenticationPage(){
 
     return(
         <div className="w-full h-screen flex justify-center items-center">
-            <Card variant="secondary" className=" flex flex-col items-center pt-25 w-1/2 h-2/3">
+            <Card variant="secondary" className=" flex flex-col items-center pt-25 md:w-1/2 md:m-0 m-5 w-full h-2/3">
                 {signedIn?<Button onClick={handleSignOut}>SIGN OUT</Button>:
                 <SignUpForm
                     setEmail={setEmail}

@@ -2,25 +2,29 @@ import { useState } from 'react'
 import MovieCard from '../componets/MovieCard';
 import type { NewMovie, NewSearch } from '../types/database';
 import { movieService } from '../services/movieService';
-import { Button, Card, SearchField } from '@heroui/react';
+import { Button, Card, SearchField, Typography } from '@heroui/react';
 import SelecetionBox from '../componets/SelectionBox';
 import { searchSerive } from '../services/searchService';
 import { useUser } from '../contexts/UserContext';
 import MovieDrawer from '../componets/MovieDrawer';
 import SearchInputAC from '../componets/SearchInputAC';
 import AndSwitch from '../componets/AndSwitch';
+import SearchInput from '../componets/SearchInput';
 
 export default function SearchPage() {
   const {user} = useUser();
+  // the movie list
   const [movies, setMovies] = useState<NewMovie[]>([]);  
+  // the movie currenly selected, used to track what to display in the movie drawer
   const [selectedMovie, setSelectedMovie] = useState<NewMovie|null>(null);  
+  // title
   const [title, setTitle] = useState<string>('');
+  //the year of relese
   const [realeaseYear, setRealeaseYear] = useState<string>('');
+  // media type (TV Show or Movie)
   const [type, setType] = useState<string | null>(null);
-
   //current search
   const [currentSearch, setCurrentSearch] = useState<NewSearch|null>(null);
-
   //the page managment variables
   const [page, setPage] = useState<number>(1);
   const amount:number = 10;
@@ -40,7 +44,9 @@ export default function SearchPage() {
   const [castAnd, setCastAnd] = useState<boolean>(false);
   const [cast, setCast] = useState<string>('');
   
+  //Search the database
   const handleSearch = async () => {
+    //create a new search, flattening arrays
     const search: NewSearch = {
         uid: user?.id ?? null,
         search_query: title.trim(),
@@ -52,10 +58,14 @@ export default function SearchPage() {
         country: country.join(","),
         release_year: realeaseYear.trim() ? Number(realeaseYear.trim()) : null
     }
+    //set the current search
     setCurrentSearch(search);
+    //start page over to 1
     setPage(1);
+    // get the movies
     const data = await movieService.getMoviesByString(search, 1, amount, genreAnd, countryAnd, directorAnd, castAnd);
     setMovies(data);
+    // if there is a user save the search
     if(user?.id == null) return;      
     searchSerive.addSearch(search)
   }
@@ -67,10 +77,11 @@ export default function SearchPage() {
     setMovies((movies) => [...movies, ...data]);
   }
 
+  // options for selection boxes
   const typeOptions = [
     "All",
-    "Movies",
-    "TV Shows"
+    "Movie",
+    "TV Show"
   ];
 
   const ratingOptions = [
@@ -195,37 +206,33 @@ export default function SearchPage() {
   ];
 
   return (
+    //fill the screen, row if large, collum if small for smartphones
     <div className='flex md:flex-row flex-col w-screen h-screen'>
       <MovieDrawer
+        //set the selected movie, deslect movie when closed, and open when one is selected
         movie={selectedMovie}
         opened={selectedMovie !== null}
+
         handleClose={(isOpen) => {
             if(!isOpen) setSelectedMovie(null);
         }}/>
-      <Card variant='tertiary' className='md:w-sm w-full pt-10 flex items-center'>
-        <SearchField className='w-[20rem]' name='search'>
-          <SearchField.Group>
-            <SearchField.SearchIcon />
-            <SearchField.Input placeholder='Search...' value={title} onChange={(e) => { setTitle(e.target.value) }} />
-            <SearchField.ClearButton onClick={e => setTitle('')} />
-          </SearchField.Group>
-        </SearchField>
-        <div className='flex flex-row w-full items-center gap-3'>
-          <SearchField className='w-full' name='director'>
-            <SearchField.Group>
-              <SearchField.Input placeholder='Director...' value={director} onChange={(e) => { setDirector(e.target.value) }} />
-            </SearchField.Group>
-          </SearchField>
-          <AndSwitch
-            andSearch={directorAnd}
-            setAndSearch={setDirectorAnd}
-          />
+      {/* card to hold the search area */}
+      <Card variant='tertiary' className='md:w-md w-full pt-5 flex items-center'>
+        <div>
+          <Typography type='h3'>SEARCH</Typography>
         </div>
-        <SearchField className='w-[10rem]' name='realeaseYear'>
-          <SearchField.Group>
-            <SearchField.Input type='number' placeholder='Release Year...' value={realeaseYear} onChange={(e) => { setRealeaseYear(e.target.value) }} />
-          </SearchField.Group>
-        </SearchField>
+        <SearchInput
+          icon={true}
+          title='Search'
+          value={title}
+          setValue={setTitle}
+        />
+        <SearchInput
+          icon={false}
+          title='Release Year'
+          value={realeaseYear}
+          setValue={setRealeaseYear}
+        />
         <SearchInputAC
           onlyOr={true}
           setAndSearch={SetAndSearch}
@@ -260,20 +267,33 @@ export default function SearchPage() {
           selectionOptions={genreOptions}
         />
         <div className='flex flex-row w-full items-center gap-3'>
-          <SearchField className='w-full' name='director'>
-            <SearchField.Group>
-              <SearchField.Input placeholder='Cast...' value={cast} onChange={(e) => { setCast(e.target.value) }} />
-            </SearchField.Group>
-          </SearchField>
+          <SearchInput
+            icon={false}
+            title='Cast'
+            value={cast}
+            setValue={setCast}
+          />
           <AndSwitch
             andSearch={castAnd}
             setAndSearch={setCastAnd}
           />
         </div>
+        <div className='flex flex-row w-full items-center gap-3'>
+          <SearchInput
+            icon={false}
+            title='Director'
+            value={director}
+            setValue={setDirector}
+          />
+          <AndSwitch
+            andSearch={directorAnd}
+            setAndSearch={setDirectorAnd}
+          />
+        </div>
         <Button onClick={() => handleSearch()}>SEARCH<SearchField.SearchIcon /></Button>
+      {/* Card to hold the movies/TV shows */}
       </Card>
-      <div className='w-full overflow-y-auto
-        overflow-x-hidden'>
+      <div className='w-full md:overflow-y-auto'>
         <div>
           <div className='w-full h-full flex justify-center flex-wrap pl-5 pr-5 pt-5 gap-5'>
             {movies.map((v) => (

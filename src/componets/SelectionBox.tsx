@@ -5,7 +5,7 @@ export default function SelecetionBox({selectionOptions, value, setValue, title}
 
     const selectionOptionList = () => {
     return selectionOptions.map((type) => (
-        <ListBox.Item key={type} id={type} textValue={type == "All" ? "" : type}>
+        <ListBox.Item key={type} id={type} textValue={type}>
         {type}
         <ListBox.ItemIndicator />
         </ListBox.Item>

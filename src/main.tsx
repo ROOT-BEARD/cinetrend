@@ -6,6 +6,7 @@ import { UserProvider } from './contexts/UserContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    {/* used to get the users user token */}
     <UserProvider>
       <App/>
     </UserProvider>

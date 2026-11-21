@@ -1,3 +1,4 @@
+/*Iterfaces for all of the database type*/
 export interface Movie {
     show_id: string;
     type?: string;
@@ -12,7 +13,6 @@ export interface Movie {
     listed_in?:string;
     description:string;
 }
-
 export interface SearchRecord {
   search_id: number | null;
   uid: string | null;
@@ -26,18 +26,17 @@ export interface SearchRecord {
   country?: string | null;
   release_year?: number | null;
 }
-
 export interface Account {
     email:string;
     created_at?: string;
     password:string;
 }
-
 export interface SearchData {
     name:string;
     searches:number;
 }
 
+//used to create the previous interfaces varibles that will be decided by supabase omited
 export type NewAccount = Omit<Account, 'create_at'>
 export type NewSearch = Omit<SearchRecord, 'search_id' | 'created_at'>
 export type NewMovie = Omit<Movie, "show_id">;

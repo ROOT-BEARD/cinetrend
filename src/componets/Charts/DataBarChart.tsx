@@ -3,9 +3,10 @@ import { CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "recharts";
 import type {SearchData} from "../../types/database";
 
 
-
+// data that will be passed into the chart
 export default function DataBarChart({data}:{data:SearchData[]}){
     return(
+        // covers the full area
         <div className="w-full h-full">
             <BarChart
                 style={{ width: '100%', maxHeight: '70vh', aspectRatio: 1.618 }}
@@ -18,7 +19,7 @@ export default function DataBarChart({data}:{data:SearchData[]}){
                     bottom: 5,
                 }}
                 >
-                    <CartesianGrid/>
+                    <CartesianGrid />
                     <XAxis dataKey="name" />
                     <YAxis width="auto" />
                     <Tooltip
@@ -26,9 +27,9 @@ export default function DataBarChart({data}:{data:SearchData[]}){
                         cursor={false}
                     />
                     <Legend />
-                    <Bar fill="var(--color-danger)" dataKey="searches" radius={[20, 20, 0, 0]}
+                    <Bar fill="var(--color-accent)" dataKey="searches" radius={[20, 20, 0, 0]}
                     activeBar={{ stroke: 'rgb(168, 168, 168)', strokeWidth: 5 }} />
-            </BarChart>
+            </BarChart >
         </div>
     );
 }

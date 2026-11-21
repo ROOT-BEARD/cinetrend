@@ -83,7 +83,6 @@ export default function SearchPage() {
     "Movie",
     "TV Show"
   ];
-
   const ratingOptions = [
     "G",
     "PG",
@@ -95,7 +94,6 @@ export default function SearchPage() {
     "TV-14",
     "TV-MA",
   ];
-
   const genreOptions = [
     "Action & Adventure",
     "Anime Features",
@@ -140,7 +138,6 @@ export default function SearchPage() {
     "Teen TV Shows",
     "Thrillers",
   ];
-
   const countryOptions = [
     "Algeria",
     "Argentina",

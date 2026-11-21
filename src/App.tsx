@@ -8,7 +8,9 @@ import AdminDashboard from "./pages/AdminDashboard";
 export default function App(){
   return(
     <BrowserRouter>
+        {/* the drawer for navigation */}
         <MenuDrawer/>
+        {/* Routes to all the pages */}
         <Routes>
             <Route path='/' element={<Dashboard/>}/>
             <Route path='/search_page' element={<SearchPage/>}/>

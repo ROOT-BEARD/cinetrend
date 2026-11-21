@@ -8,11 +8,11 @@
 [data-theme="light"],
 [data-theme="default"] {
   /* Theme Colors (Light Mode) */
-  --accent: oklch(58.14% 0.2349 21.55);
+  --accent: #e50035;
   --accent-foreground: oklch(99.11% 0 0);
   --background: oklch(97.02% 0.0000 21.55);
   --border: oklch(90.00% 0.0000 21.55);
-  --danger: oklch(65.32% 0.2328 357.87);
+  --danger: #f53790;
   --danger-foreground: oklch(99.11% 0 0);
   --default: oklch(94.00% 0.0000 21.55);
   --default-foreground: oklch(21.03% 0.0059 21.55);

@@ -3,13 +3,13 @@ import MovieCard from '../componets/MovieCard';
 import type { NewMovie, NewSearch } from '../types/database';
 import { movieService } from '../services/movieService';
 import { Button, Card, SearchField, Typography } from '@heroui/react';
-import SelecetionBox from '../componets/SelectionBox';
+import SelecetionBox from '../componets/Input/SelectionBox';
 import { searchSerive } from '../services/searchService';
 import { useUser } from '../contexts/UserContext';
 import MovieDrawer from '../componets/MovieDrawer';
-import SearchInputAC from '../componets/SearchInputAC';
-import AndSwitch from '../componets/AndSwitch';
-import SearchInput from '../componets/SearchInput';
+import SearchInputAC from '../componets/Input/SearchInputAC';
+import AndSwitch from '../componets/Input/AndSwitch';
+import SearchInput from '../componets/Input/SearchInput';
 
 export default function SearchPage() {
   const {user} = useUser();

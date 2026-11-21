@@ -33,6 +33,11 @@ export interface Account {
     password:string;
 }
 
+export interface SearchData {
+    name:string;
+    searches:number;
+}
+
 export type NewAccount = Omit<Account, 'create_at'>
 export type NewSearch = Omit<SearchRecord, 'search_id' | 'created_at'>
 export type NewMovie = Omit<Movie, "show_id">;
